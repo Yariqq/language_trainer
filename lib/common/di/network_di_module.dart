@@ -1,5 +1,7 @@
 import 'package:cherrypick/cherrypick.dart';
 import 'package:dio/dio.dart';
+import 'package:seven/common/interceptors/network_interceptor.dart';
+import 'package:seven/login/data/source/token_data_source/token_data_source.dart';
 
 class NetworkDiModule extends Module {
   @override
@@ -16,7 +18,14 @@ class NetworkDiModule extends Module {
         .singleton();
 
     bind<Dio>().toProvide(() {
-      final dio = Dio(currentScope.resolve<BaseOptions>());
+      final dio = Dio(currentScope.resolve<BaseOptions>())
+        ..interceptors.addAll(
+          [
+            NetworkInterceptor(
+              tokenDataSource: currentScope.resolve<TokenDataSource>(),
+            ),
+          ],
+        );
       return dio;
     }).singleton();
   }

@@ -6,4 +6,8 @@ class TokenModel {
     required this.accessToken,
     required this.refreshToken,
   });
+
+  TokenModel.empty()
+      : accessToken = '',
+        refreshToken = '';
 }

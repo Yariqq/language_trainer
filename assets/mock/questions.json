@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "section_id": 1,
+    "content": "How would you say, 'Take out the trash' in Persian?",
+    "gpt_answer": "In Persian, 'Take out the trash' can be translated as 'ashghale ro birun bebar'.",
+    "for_review": false,
+    "user_answer": null,
+    "reviewer_answer": null
+  },
+  {
+    "id": 2,
+    "section_id": 1,
+    "content": "How would you say, 'Take out the trash' in Persian?",
+    "gpt_answer": "In Persian, 'Take out the trash' can be translated as 'ashghale ro birun bebar'.",
+    "for_review": false,
+    "user_answer": null,
+    "reviewer_answer": null
+  },
+  {
+    "id": 3,
+    "section_id": 1,
+    "content": "How would you say, 'Take out the trash' in Persian?",
+    "gpt_answer": "In Persian, 'Take out the trash' can be translated as 'ashghale ro birun bebar'.",
+    "for_review": false,
+    "user_answer": null,
+    "reviewer_answer": null
+  }
+]

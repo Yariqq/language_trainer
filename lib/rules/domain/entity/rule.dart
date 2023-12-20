@@ -1,5 +1,5 @@
 class Rule {
-  final String id;
+  final int id;
   final String name;
 
   const Rule({
@@ -8,6 +8,6 @@ class Rule {
   });
 
   Rule.empty()
-      : id = '',
+      : id = -1,
         name = '';
 }

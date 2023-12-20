@@ -6,7 +6,7 @@ class RuleMapper extends BaseMapper<Rule, RuleResponseBody> {
   @override
   Rule mapFromBean(RuleResponseBody src) {
     return Rule(
-      id: src.id ?? '',
+      id: src.id ?? -1,
       name: src.name ?? '',
     );
   }

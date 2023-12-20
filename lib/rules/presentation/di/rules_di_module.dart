@@ -1,5 +1,7 @@
 import 'package:cherrypick/cherrypick.dart';
 import 'package:dio/dio.dart';
+import 'package:seven/rules/data/mappers/question_mapper.dart';
+import 'package:seven/rules/data/mappers/question_type_mapper.dart';
 import 'package:seven/rules/data/mappers/rule_mapper.dart';
 import 'package:seven/rules/data/repository/rules_repository_impl.dart';
 import 'package:seven/rules/data/source/api/rules_service_api.dart';
@@ -7,6 +9,8 @@ import 'package:seven/rules/data/source/rules_data_source.dart';
 import 'package:seven/rules/data/source/rules_mock_data_source.dart';
 import 'package:seven/rules/data/source/rules_remote_data_source.dart';
 import 'package:seven/rules/domain/repository/rules_repository.dart';
+import 'package:seven/rules/domain/usecase/create_question_usecase.dart';
+import 'package:seven/rules/domain/usecase/get_questions_usecase.dart';
 import 'package:seven/rules/domain/usecase/get_rules_usecase.dart';
 
 class RulesDiModule extends Module {
@@ -20,6 +24,10 @@ class RulesDiModule extends Module {
 
   void _bindMappers(Scope scope) {
     bind<RuleMapper>().toInstance(RuleMapper());
+
+    bind<QuestionMapper>().toInstance(QuestionMapper());
+
+    bind<QuestionTypeMapper>().toInstance(QuestionTypeMapper());
   }
 
   void _bindDataSources(Scope scope) {
@@ -44,6 +52,8 @@ class RulesDiModule extends Module {
       () => RulesRepositoryImpl(
         dataSource: scope.resolve<RulesDataSource>(),
         ruleMapper: scope.resolve<RuleMapper>(),
+        questionMapper: scope.resolve<QuestionMapper>(),
+        questionTypeMapper: scope.resolve<QuestionTypeMapper>(),
       ),
     );
   }
@@ -51,6 +61,18 @@ class RulesDiModule extends Module {
   void _bindUseCases(Scope scope) {
     bind<GetRulesUseCase>().toProvide(
       () => GetRulesUseCase(
+        repository: scope.resolve<RulesRepository>(),
+      ),
+    );
+
+    bind<GetQuestionsUseCase>().toProvide(
+      () => GetQuestionsUseCase(
+        repository: scope.resolve<RulesRepository>(),
+      ),
+    );
+
+    bind<CreateQuestionUseCase>().toProvide(
+      () => CreateQuestionUseCase(
         repository: scope.resolve<RulesRepository>(),
       ),
     );

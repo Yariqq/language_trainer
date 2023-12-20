@@ -60,6 +60,7 @@ abstract class $AppRouter extends _i7.RootStackRouter {
         routeData: routeData,
         child: _i5.RuleDetailsPage(
           title: args.title,
+          ruleId: args.ruleId,
           key: args.key,
         ),
       );
@@ -148,12 +149,14 @@ class RootRoute extends _i7.PageRouteInfo<void> {
 class RuleDetailsRoute extends _i7.PageRouteInfo<RuleDetailsRouteArgs> {
   RuleDetailsRoute({
     required String title,
+    required int ruleId,
     _i8.Key? key,
     List<_i7.PageRouteInfo>? children,
   }) : super(
           RuleDetailsRoute.name,
           args: RuleDetailsRouteArgs(
             title: title,
+            ruleId: ruleId,
             key: key,
           ),
           initialChildren: children,
@@ -168,16 +171,19 @@ class RuleDetailsRoute extends _i7.PageRouteInfo<RuleDetailsRouteArgs> {
 class RuleDetailsRouteArgs {
   const RuleDetailsRouteArgs({
     required this.title,
+    required this.ruleId,
     this.key,
   });
 
   final String title;
 
+  final int ruleId;
+
   final _i8.Key? key;
 
   @override
   String toString() {
-    return 'RuleDetailsRouteArgs{title: $title, key: $key}';
+    return 'RuleDetailsRouteArgs{title: $title, ruleId: $ruleId, key: $key}';
   }
 }
 

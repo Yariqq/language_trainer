@@ -6,4 +6,5 @@ class CommonSize {
   static const paddingLarge = 24.0;
   static const iconSize = 24.0;
   static const borderRadius = 12.0;
+  static const defaultRadius = 16.0;
 }

@@ -2,9 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:cherrypick/cherrypick.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:seven/app/router/app_router.gr.dart';
 import 'package:seven/app/theme/common_size.dart';
-import 'package:seven/common/presentation/loader_overlay_helper.dart';
 import 'package:seven/login/domain/usecase/login_usecase.dart';
 import 'package:seven/login/presentation/bloc/login_bloc.dart';
 import 'package:seven/login/presentation/bloc/login_event.dart';
@@ -20,7 +20,7 @@ class LoginPage extends StatefulWidget {
   }
 }
 
-class _LoginPageState extends State<LoginPage> with GlobalLoaderHelper {
+class _LoginPageState extends State<LoginPage> {
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -36,7 +36,11 @@ class _LoginPageState extends State<LoginPage> with GlobalLoaderHelper {
       ),
       child: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
-          setLoaderVisible(context, state is LoadingState);
+          context.loaderOverlay.hide();
+
+          if (state is LoadingState) {
+            context.loaderOverlay.show();
+          }
 
           if (state is SuccessState) {
             context.pushRoute(const AuthEmptyRoute(children: [RootRoute()]));
@@ -107,8 +111,16 @@ class _LoginPageState extends State<LoginPage> with GlobalLoaderHelper {
                         padding: MaterialStatePropertyAll(
                           EdgeInsets.all(CommonSize.paddingMedium),
                         ),
+                        backgroundColor: MaterialStatePropertyAll(
+                          Colors.deepPurpleAccent,
+                        ),
                       ),
-                      child: const Text('Log in'),
+                      child: Text(
+                        'Log in',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white,
+                            ),
+                      ),
                     ),
                   ],
                 ),

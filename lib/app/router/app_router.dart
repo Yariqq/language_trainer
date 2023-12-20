@@ -38,10 +38,10 @@ class AppRouter extends $AppRouter {
                 ),
               ],
             ),
-            // AutoRoute(
-            //   path: 'own_request_details',
-            //   page: OwnRequestDetailsRoute.page,
-            // ),
+            AutoRoute(
+              path: 'rule_details',
+              page: RuleDetailsRoute.page,
+            ),
           ],
         ),
       ];

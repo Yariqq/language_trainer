@@ -7,7 +7,7 @@ part 'rule_response_body.g.dart';
 @JsonSerializable()
 class RuleResponseBody {
   @JsonKey(name: 'id')
-  final String? id;
+  final int? id;
   @JsonKey(name: 'name')
   final String? name;
 

@@ -54,12 +54,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.light,
-      routerDelegate: router.delegate(),
-      routeInformationParser: router.defaultRouteParser(),
-      builder: (_, child) => LoaderOverlay(child: child!),
+    return GlobalLoaderOverlay(
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.light,
+        routerDelegate: router.delegate(),
+        routeInformationParser: router.defaultRouteParser(),
+        builder: (_, child) => child!,
+      ),
     );
   }
 }

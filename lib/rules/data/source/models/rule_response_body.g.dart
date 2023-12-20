@@ -8,7 +8,7 @@ part of 'rule_response_body.dart';
 
 RuleResponseBody _$RuleResponseBodyFromJson(Map<String, dynamic> json) =>
     RuleResponseBody(
-      id: json['id'] as String?,
+      id: json['id'] as int?,
       name: json['name'] as String?,
     );
 
