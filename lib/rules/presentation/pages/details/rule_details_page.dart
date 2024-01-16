@@ -6,12 +6,16 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:seven/app/theme/common_size.dart';
 import 'package:seven/rules/domain/entity/question_type.dart';
 import 'package:seven/rules/domain/usecase/create_question_usecase.dart';
+import 'package:seven/rules/domain/usecase/delete_question_usecase.dart';
 import 'package:seven/rules/domain/usecase/get_questions_usecase.dart';
+import 'package:seven/rules/domain/usecase/send_to_review_usecase.dart';
 import 'package:seven/rules/presentation/pages/details/bloc/rule_details_bloc.dart';
 import 'package:seven/rules/presentation/pages/details/bloc/rule_details_event.dart';
 import 'package:seven/rules/presentation/pages/details/bloc/rule_details_state.dart';
 import 'package:seven/rules/presentation/pages/details/widgets/create_question_type_widget.dart';
 import 'package:seven/rules/presentation/pages/details/widgets/question_item.dart';
+
+const _tabBarLength = 2;
 
 @RoutePage()
 class RuleDetailsPage extends StatelessWidget {
@@ -30,123 +34,163 @@ class RuleDetailsPage extends StatelessWidget {
         create: (context) => RuleDetailsBloc(
           getQuestionsUseCase: di.resolve<GetQuestionsUseCase>(),
           createQuestionUseCase: di.resolve<CreateQuestionUseCase>(),
+          deleteQuestionUseCase: di.resolve<DeleteQuestionUseCase>(),
+          sendToReviewUseCase: di.resolve<SendToReviewUseCase>(),
         )..add(RuleDetailsEvent.getData(ruleId: ruleId.toString())),
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-          ),
-          body: BlocConsumer<RuleDetailsBloc, RuleDetailsState>(
-            listener: (context, state) {
-              context.loaderOverlay.hide();
-              if (state is LoadingAfterCreationState) {
-                context.loaderOverlay.show();
-              }
+        child: DefaultTabController(
+          length: _tabBarLength,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(title),
+              bottom: const TabBar(
+                labelColor: Colors.black,
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: Colors.deepPurpleAccent,
+                tabs: [
+                  Tab(text: 'Active'),
+                  Tab(text: 'On review'),
+                ],
+              ),
+            ),
+            body: BlocConsumer<RuleDetailsBloc, RuleDetailsState>(
+              listener: (context, state) {
+                context.loaderOverlay.hide();
+                if (state is LoadingAfterCreationState) {
+                  context.loaderOverlay.show();
+                }
 
-              if (state is ErrorAfterCreationState) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Something went wrong -- ${state.error}'),
-                  ),
-                );
-              }
-            },
-            builder: (context, state) {
-              if (state is LoadingState) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is ErrorState) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error, size: 100),
-                      Text('Something went wrong (${state.error})'),
-                    ],
-                  ),
-                );
-              }
-
-              return Column(
-                children: [
-                  Expanded(
-                    child: state.data.questions.isEmpty
-                        ? const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.error, size: 100),
-                              Text('Oops, nothing to show :('),
-                            ],
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.only(
-                              left: CommonSize.paddingDefault,
-                              top: CommonSize.paddingDefault,
-                              right: CommonSize.paddingDefault,
-                              bottom: CommonSize.doubleDefault,
-                            ),
-                            itemCount: state.data.questions.length,
-                            itemBuilder: (context, index) {
-                              return QuestionItem(
-                                question: state.data.questions[index],
-                                index: index,
-                              );
-                            },
-                            separatorBuilder: (context, index) {
-                              return const SizedBox(
-                                height: CommonSize.paddingDefault,
-                              );
-                            },
-                          ),
-                  ),
-                  const SizedBox(height: CommonSize.paddingSmall),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: CommonSize.paddingDefault,
-                      right: CommonSize.paddingDefault,
-                      bottom: CommonSize.doubleDefault,
+                if (state is ErrorAfterCreationState) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Something went wrong -- ${state.error}'),
                     ),
-                    child: Row(
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is LoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is ErrorState) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () =>
-                                _showCreateQuestionBottomSheet(context),
-                            style: const ButtonStyle().copyWith(
-                              padding: const MaterialStatePropertyAll(
-                                EdgeInsets.all(CommonSize.paddingMedium),
-                              ),
-                              backgroundColor: const MaterialStatePropertyAll(
-                                Colors.deepPurpleAccent,
-                              ),
-                            ),
-                            child: Text(
-                              'Generate',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    color: Colors.white,
-                                  ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: CommonSize.paddingDefault),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: const ButtonStyle(
-                              padding: MaterialStatePropertyAll(
-                                EdgeInsets.all(CommonSize.paddingMedium),
-                              ),
-                            ),
-                            child: const Text('Review'),
-                          ),
-                        ),
+                        const Icon(Icons.error, size: 100),
+                        Text('Something went wrong (${state.error})'),
                       ],
                     ),
-                  ),
-                ],
-              );
-            },
+                  );
+                }
+
+                final activeQuestions =
+                    state.data.questions.where((e) => !e.forReview).toList();
+                final questionsForReview =
+                    state.data.questions.where((e) => e.forReview).toList();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          activeQuestions.isEmpty
+                              ? const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.error, size: 100),
+                                    Text('Oops, nothing to show :('),
+                                  ],
+                                )
+                              : ListView.separated(
+                                  padding: const EdgeInsets.only(
+                                    left: CommonSize.paddingDefault,
+                                    top: CommonSize.paddingDefault,
+                                    right: CommonSize.paddingDefault,
+                                    bottom: CommonSize.doubleDefault,
+                                  ),
+                                  itemCount: activeQuestions.length,
+                                  itemBuilder: (context, index) {
+                                    return QuestionItem(
+                                      question: activeQuestions[index],
+                                      index: index,
+                                      onDelete: () => _onDelete(
+                                        context,
+                                        activeQuestions[index].id.toString(),
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) {
+                                    return const SizedBox(
+                                      height: CommonSize.paddingDefault,
+                                    );
+                                  },
+                                ),
+                          questionsForReview.isEmpty
+                              ? const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.error, size: 100),
+                                    Text('Oops, nothing to show :('),
+                                  ],
+                                )
+                              : ListView.separated(
+                                  padding: const EdgeInsets.only(
+                                    left: CommonSize.paddingDefault,
+                                    top: CommonSize.paddingDefault,
+                                    right: CommonSize.paddingDefault,
+                                    bottom: CommonSize.doubleDefault,
+                                  ),
+                                  itemCount: questionsForReview.length,
+                                  itemBuilder: (context, index) {
+                                    return QuestionItem(
+                                      question: questionsForReview[index],
+                                      index: index,
+                                      onDelete: () => _onDelete(
+                                        context,
+                                        questionsForReview[index].id.toString(),
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) {
+                                    return const SizedBox(
+                                      height: CommonSize.paddingDefault,
+                                    );
+                                  },
+                                )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: CommonSize.paddingSmall),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: CommonSize.paddingDefault,
+                        right: CommonSize.paddingDefault,
+                        bottom: CommonSize.doubleDefault,
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () =>
+                            _showCreateQuestionBottomSheet(context),
+                        style: const ButtonStyle().copyWith(
+                          padding: const MaterialStatePropertyAll(
+                            EdgeInsets.all(CommonSize.paddingMedium),
+                          ),
+                          backgroundColor: const MaterialStatePropertyAll(
+                            Colors.deepPurpleAccent,
+                          ),
+                        ),
+                        child: Text(
+                          'Generate',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.white,
+                                  ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -212,6 +256,12 @@ class RuleDetailsPage extends StatelessWidget {
   }) {
     context.read<RuleDetailsBloc>().add(
           RuleDetailsEvent.createQuestion(type: type, content: content),
+        );
+  }
+
+  void _onDelete(BuildContext context, String questionId) {
+    context.read<RuleDetailsBloc>().add(
+          RuleDetailsEvent.deleteQuestion(questionId: questionId),
         );
   }
 }

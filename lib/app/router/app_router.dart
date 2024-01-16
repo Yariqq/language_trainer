@@ -42,6 +42,10 @@ class AppRouter extends $AppRouter {
               path: 'rule_details',
               page: RuleDetailsRoute.page,
             ),
+            AutoRoute(
+              path: 'dictionary_details',
+              page: DictionaryDetailsRoute.page,
+            ),
           ],
         ),
       ];

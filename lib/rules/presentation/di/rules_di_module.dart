@@ -2,6 +2,7 @@ import 'package:cherrypick/cherrypick.dart';
 import 'package:dio/dio.dart';
 import 'package:seven/rules/data/mappers/question_mapper.dart';
 import 'package:seven/rules/data/mappers/question_type_mapper.dart';
+import 'package:seven/rules/data/mappers/review_question_model_mapper.dart';
 import 'package:seven/rules/data/mappers/rule_mapper.dart';
 import 'package:seven/rules/data/repository/rules_repository_impl.dart';
 import 'package:seven/rules/data/source/api/rules_service_api.dart';
@@ -10,8 +11,10 @@ import 'package:seven/rules/data/source/rules_mock_data_source.dart';
 import 'package:seven/rules/data/source/rules_remote_data_source.dart';
 import 'package:seven/rules/domain/repository/rules_repository.dart';
 import 'package:seven/rules/domain/usecase/create_question_usecase.dart';
+import 'package:seven/rules/domain/usecase/delete_question_usecase.dart';
 import 'package:seven/rules/domain/usecase/get_questions_usecase.dart';
 import 'package:seven/rules/domain/usecase/get_rules_usecase.dart';
+import 'package:seven/rules/domain/usecase/send_to_review_usecase.dart';
 
 class RulesDiModule extends Module {
   @override
@@ -28,6 +31,8 @@ class RulesDiModule extends Module {
     bind<QuestionMapper>().toInstance(QuestionMapper());
 
     bind<QuestionTypeMapper>().toInstance(QuestionTypeMapper());
+
+    bind<ReviewQuestionModelMapper>().toInstance(ReviewQuestionModelMapper());
   }
 
   void _bindDataSources(Scope scope) {
@@ -54,6 +59,7 @@ class RulesDiModule extends Module {
         ruleMapper: scope.resolve<RuleMapper>(),
         questionMapper: scope.resolve<QuestionMapper>(),
         questionTypeMapper: scope.resolve<QuestionTypeMapper>(),
+        reviewQuestionModelMapper: scope.resolve<ReviewQuestionModelMapper>(),
       ),
     );
   }
@@ -73,6 +79,18 @@ class RulesDiModule extends Module {
 
     bind<CreateQuestionUseCase>().toProvide(
       () => CreateQuestionUseCase(
+        repository: scope.resolve<RulesRepository>(),
+      ),
+    );
+
+    bind<DeleteQuestionUseCase>().toProvide(
+      () => DeleteQuestionUseCase(
+        repository: scope.resolve<RulesRepository>(),
+      ),
+    );
+
+    bind<SendToReviewUseCase>().toProvide(
+      () => SendToReviewUseCase(
         repository: scope.resolve<RulesRepository>(),
       ),
     );

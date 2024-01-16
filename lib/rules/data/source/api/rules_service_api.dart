@@ -3,6 +3,7 @@ import 'package:retrofit/retrofit.dart';
 import 'package:seven/rules/data/source/models/create_question_request_body.dart';
 import 'package:seven/rules/data/source/models/question_response_body.dart';
 import 'package:seven/rules/data/source/models/rule_response_body.dart';
+import 'package:seven/rules/data/source/models/send_to_review_request_body.dart';
 
 part 'rules_service_api.g.dart';
 
@@ -22,5 +23,18 @@ abstract class RulesServiceApi {
   Future<void> createQuestion(
     @Path() String id,
     @Body() CreateQuestionRequestBody body,
+  );
+
+  @DELETE('api/sections/{ruleId}/questions/{questionId}')
+  Future<void> deleteQuestion(
+    @Path() String ruleId,
+    @Path() String questionId,
+  );
+
+  @PATCH('api/sections/{ruleId}/questions/{questionId}')
+  Future<void> sendToReview(
+    @Path() String ruleId,
+    @Path() String questionId,
+    @Body() SendToReviewRequestBody body,
   );
 }

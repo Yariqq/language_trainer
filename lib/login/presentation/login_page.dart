@@ -66,8 +66,6 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(Icons.login),
-                    const SizedBox(height: CommonSize.paddingLarge),
                     TextFormField(
                       controller: _loginController,
                       decoration: const InputDecoration(
@@ -84,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: CommonSize.paddingDefault),
                     TextFormField(
                       controller: _passwordController,
+                      obscureText: true,
                       decoration: const InputDecoration(
                         labelText: 'Password',
                       ),

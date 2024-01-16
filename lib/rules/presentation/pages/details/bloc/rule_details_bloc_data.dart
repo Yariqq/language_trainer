@@ -20,7 +20,9 @@ class RuleDetailsBlocData extends Equatable {
     );
   }
 
-  const RuleDetailsBlocData.empty() : questions = const [], ruleId = '';
+  const RuleDetailsBlocData.empty()
+      : questions = const [],
+        ruleId = '';
 
   @override
   List<Object?> get props => [questions, ruleId];

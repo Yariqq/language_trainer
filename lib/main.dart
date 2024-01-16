@@ -5,6 +5,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:seven/app/router/app_router.dart';
 import 'package:seven/common/di/network_di_module.dart';
 import 'package:seven/common/di/settings_di_module.dart';
+import 'package:seven/dictionary/presentation/di/dictionary_di_module.dart';
 import 'package:seven/login/presentation/di/login_di_module.dart';
 import 'package:seven/rules/presentation/di/rules_di_module.dart';
 
@@ -41,6 +42,7 @@ void main() async {
       NetworkDiModule(),
       LoginDiModule(),
       RulesDiModule(),
+      DictionaryDiModule(),
     ],
   );
 
